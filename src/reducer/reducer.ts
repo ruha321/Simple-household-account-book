@@ -2,8 +2,8 @@ import type {
     Action,
     AppState,
     DraftEntry,
-    ExpenseEntry,
 } from "../types/Date-types";
+import submitDraft from "./submitDraft";
 import { validateDraft } from "./validation";
 
 const emptyDraft: DraftEntry = {
@@ -63,28 +63,19 @@ function reducer(state: AppState, action: Action): AppState {
                 selectedTag: action.value,
             };
         case "EntrySubmitted": {
-            const errors = validateDraft(state.draft);
+            const result = submitDraft(action.id, state.draft)
 
-            if (errors.length > 0) {
+            if (!result.ok) {
                 return {
                     ...state,
                     submitAttemoted: true,
-                    errors,
+                    errors: result.errors,
                 };
             }
 
-            const newEntry: ExpenseEntry = {
-                id: action.id,
-                date: state.draft.date,
-                tag: state.draft.tag,
-                description: state.draft.description,
-                amount: Number(state.draft.amount),
-                note: state.draft.note,
-            };
-
             return {
                 ...state,
-                entries: [...state.entries, newEntry],
+                entries: [...state.entries, result.entry],
                 draft: emptyDraft,
                 errors: [],
                 submitAttemoted: false,

@@ -13,7 +13,7 @@ function validateDraft(draft: DraftEntry): readonly ValidationError[] {
 
     if (draft.amount.trim() === "") {
         errors.push("AmountRequired");
-    } else if (Number.isNaN(Number(draft.amount))) {
+    } else if (!parseAmount(draft.amount).ok) {
         errors.push("AmountInvalid");
     }
 
@@ -33,4 +33,24 @@ function errorMessage(error: ValidationError): string {
     }
 }
 
-export { validateDraft, errorMessage };
+type ParseAmountResult =
+    | Readonly<{ ok: true; value: number }>
+    | Readonly<{ ok: false; error: "AmountInvalid" }>;
+
+function parseAmount(input: string): ParseAmountResult {
+    const trimmed = input.trim();
+
+    if (trimmed === "") {
+        return { ok: false, error: "AmountInvalid" };
+    }
+
+    const value = Number(trimmed);
+
+    if (Number.isNaN(value)) {
+        return { ok: false, error: "AmountInvalid" };
+    }
+
+    return { ok: true, value };
+}
+
+export { validateDraft, errorMessage, parseAmount };

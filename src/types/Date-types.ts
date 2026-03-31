@@ -19,10 +19,23 @@ type ExpenseEntry = Readonly<{
     note: string;
 }>;
 
+type ValidationError =
+    | "DateRequired"
+    | "DescriptionRequired"
+    | "AmountRequired"
+    | "AmountInvalid";
+
+type ValidationResult = Readonly<{
+    ok: boolean;
+    errors: readonly ValidationError[];
+}>;
+
 type AppState = Readonly<{
     entries: readonly ExpenseEntry[];
     draft: DraftEntry;
     selectedTag: SelectedTag;
+    errors: readonly ValidationError[];
+    submitAttemoted: boolean;
 }>;
 
 type Action =
@@ -34,4 +47,4 @@ type Action =
     | Readonly<{ type: "EntrySubmitted"; id: string }>
     | Readonly<{ type: "SelectedTagChanged"; value: SelectedTag }>;
 
-export type { Tag, SelectedTag, DraftEntry, ExpenseEntry, AppState, Action };
+export type { Tag, SelectedTag, DraftEntry, ExpenseEntry, AppState, Action, ValidationError, ValidationResult };

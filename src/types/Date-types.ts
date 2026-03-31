@@ -11,7 +11,7 @@ type DraftEntry = Readonly<{
 }>;
 
 type ExpenseEntry = Readonly<{
-    id: number;
+    id: string;
     date: string;
     tag: Tag;
     description: string;
@@ -26,12 +26,12 @@ type AppState = Readonly<{
 }>;
 
 type Action =
-    | Readonly<{ types: "DraftDateChanged"; value: string }>
-    | Readonly<{ types: "DraftTagChanged"; value: Tag }>
-    | Readonly<{ types: "DraftDescriptionChanged"; value: string }>
-    | Readonly<{ types: "DraftAmountChanged"; value: string }>
-    | Readonly<{ types: "DraftNoteChanged"; value: string }>
-    | Readonly<{ types: "EntrySubmitted"; id: string }>
-    | Readonly<{ types: "SelectedTagChanged"; value: SelectedTag }>;
+    | Readonly<{ type: "DraftDateChanged"; value: string }>
+    | Readonly<{ type: "DraftTagChanged"; value: Tag }>
+    | Readonly<{ type: "DraftDescriptionChanged"; value: string }>
+    | Readonly<{ type: "DraftAmountChanged"; value: string }>
+    | Readonly<{ type: "DraftNoteChanged"; value: string }>
+    | Readonly<{ type: "EntrySubmitted"; id: string }>
+    | Readonly<{ type: "SelectedTagChanged"; value: SelectedTag }>;
 
 export type { Tag, SelectedTag, DraftEntry, ExpenseEntry, AppState, Action };

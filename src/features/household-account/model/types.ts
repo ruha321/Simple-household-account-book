@@ -1,16 +1,8 @@
-const TAGS = ["FoodExpense", "Hobby", "UtilityBills", "Loan"] as const;
+import { TAGS, SELECTED_TAGS } from "./constants";
+
 type Tag = (typeof TAGS)[number];
 
-const SELECTED_TAGS = ["All", ...TAGS] as const;
 type SelectedTag = (typeof SELECTED_TAGS)[number];
-
-function isTag(value: string): value is Tag {
-    return TAGS.includes(value as Tag);
-}
-
-function isSelectedTag(value: string): value is SelectedTag {
-    return SELECTED_TAGS.includes(value as SelectedTag);
-}
 
 type DraftEntry = Readonly<{
     date: string;
@@ -27,11 +19,6 @@ type ExpenseEntry = Readonly<{
     description: string;
     amount: number;
     note: string;
-}>;
-
-type PersistedState = Readonly<{
-    entries: readonly ExpenseEntry[];
-    selectedTag: SelectedTag;
 }>;
 
 type ValidationError =
@@ -67,11 +54,17 @@ export type {
     SelectedTag,
     DraftEntry,
     ExpenseEntry,
-    PersistedState,
     AppState,
     Action,
     ValidationError,
     ValidationResult,
 };
 
-export { TAGS, SELECTED_TAGS, isTag, isSelectedTag };
+export { isTag, isSelectedTag };
+function isTag(value: string): value is Tag {
+    return TAGS.includes(value as Tag);
+}
+
+function isSelectedTag(value: string): value is SelectedTag {
+    return SELECTED_TAGS.includes(value as SelectedTag);
+}

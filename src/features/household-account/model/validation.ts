@@ -1,4 +1,4 @@
-import type { DraftEntry, ValidationError } from "../types/types";
+import type { DraftEntry, ValidationError } from "./types";
 
 function validateDraft(draft: DraftEntry): readonly ValidationError[] {
     const errors: ValidationError[] = [];
@@ -18,19 +18,6 @@ function validateDraft(draft: DraftEntry): readonly ValidationError[] {
     }
 
     return errors;
-}
-
-function errorMessage(error: ValidationError): string {
-    switch (error) {
-        case "DateRequired":
-            return "日付を入力してね";
-        case "DescriptionRequired":
-            return "摘要を入力してね";
-        case "AmountRequired":
-            return "金額を入力してね";
-        case "AmountInvalid":
-            return "金額を数値で入力してね";
-    }
 }
 
 type ParseAmountResult =
@@ -53,4 +40,4 @@ function parseAmount(input: string): ParseAmountResult {
     return { ok: true, value };
 }
 
-export { validateDraft, errorMessage, parseAmount };
+export { validateDraft, parseAmount };

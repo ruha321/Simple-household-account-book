@@ -1,4 +1,4 @@
-import type { DraftEntry, ExpenseEntry, ValidationError } from "../types/types";
+import type { DraftEntry, ExpenseEntry, ValidationError } from "./types";
 import { parseAmount, validateDraft } from "./validation";
 
 function createEntry(

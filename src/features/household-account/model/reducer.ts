@@ -1,15 +1,7 @@
-import { loadPersistedState } from "../effect";
-import type { Action, AppState, DraftEntry } from "../types/types";
+import type { Action, AppState, DraftEntry } from "./types";
+import { emptyDraft } from "./constants";
 import submitDraft from "./submitDraft";
 import { validateDraft } from "./validation";
-
-const emptyDraft: DraftEntry = {
-    date: "",
-    tag: "FoodExpense",
-    description: "",
-    amount: "",
-    note: "",
-};
 
 const initialState: AppState = {
     entries: [],
@@ -18,20 +10,6 @@ const initialState: AppState = {
     errors: [],
     submitAttempted: false,
 };
-
-function createInitialState(): AppState {
-    const persisted = loadPersistedState();
-
-    if (persisted === null) {
-        return initialState;
-    }
-
-    return {
-        ...initialState,
-        entries: persisted.entries,
-        selectedTag: persisted.selectedTag,
-    };
-}
 
 function updateDraft(state: AppState, nextDraft: DraftEntry): AppState {
     return {
@@ -95,4 +73,4 @@ function reducer(state: AppState, action: Action): AppState {
     }
 }
 
-export { emptyDraft, initialState, createInitialState, reducer };
+export { initialState, reducer };

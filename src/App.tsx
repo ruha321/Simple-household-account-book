@@ -1,34 +1,24 @@
 import { useEffect, useReducer } from "react";
 import "./App.css";
-import { createInitialState, reducer } from "./reducer/reducer";
+import { createInitialState } from "./features/household-account/model/persistence";
+import { reducer } from "./features/household-account/model/reducer";
 import {
     selectFilteredTotalAmount,
     selectVisibleEntries,
     sumAmount,
-} from "./derived-data/derivedData";
-import { errorMessage } from "./reducer/validation";
+} from "./features/household-account/model/selectors";
+import type { PersistedState } from "./features/household-account/model/persistence";
 import {
-    isSelectedTag,
-    isTag,
-    SELECTED_TAGS,
+    errorMessage,
+    selectedTagLabelMap,
+    tagLabelMap,
+} from "./features/household-account/ui/labels";
+import { isSelectedTag, isTag } from "./features/household-account/model/types";
+import { STORAGE_KEY } from "./features/household-account/model/persistence";
+import {
     TAGS,
-    type PersistedState,
-    type SelectedTag,
-    type Tag,
-} from "./types/types";
-import { STORAGE_KEY } from "./effect";
-
-const tagLabelMap = Object.freeze({
-    FoodExpense: "食費",
-    Hobby: "趣味",
-    UtilityBills: "公共料金",
-    Loan: "返済",
-} satisfies Record<Tag, string>);
-
-const selectedTagLabelMap = Object.freeze({
-    All: "すべて",
-    ...tagLabelMap,
-} satisfies Record<SelectedTag, string>);
+    SELECTED_TAGS,
+} from "./features/household-account/model/constants";
 
 function App() {
     const [state, dispatch] = useReducer(reducer, createInitialState());
@@ -37,12 +27,12 @@ function App() {
     const totalAmount = sumAmount(state.entries);
     const filteredTotalAmount = selectFilteredTotalAmount(state);
 
-    const {entries,selectedTag} = state;
+    const { entries, selectedTag } = state;
     useEffect(() => {
         const persisted: PersistedState = {
             entries,
-            selectedTag
-        }
+            selectedTag,
+        };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
     }, [entries, selectedTag]);
 

@@ -1,66 +1,160 @@
 import { useReducer } from "react";
 import "./App.css";
 import { initialState, reducer } from "./reducer/reducer";
-import { filterByTag, sumAmount } from "./derived-data/derivedData";
+import { selectVisibleEntries, sumAmount } from "./derived-data/derivedData";
 import { errorMessage } from "./reducer/validation";
+import type { SelectedTag, Tag } from "./types/Date-types";
+
+const tagLabelMap = Object.freeze({
+    FoodExpense: "食費",
+    Hobby: "趣味",
+    UtilityBills: "公共料金",
+    Loan: "返済",
+} satisfies Record<Tag, string>);
 
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const visibleEntries = filterByTag(state.entries, state.selectedTag);
+    const visibleEntries = selectVisibleEntries(state);
+    const totalAmount = sumAmount(state.entries);
     const filteredTotalAmount = sumAmount(visibleEntries);
 
     return (
-        <>
-            <pre>{JSON.stringify(state, null, 2)}</pre>
-            {state.submitAttemoted && state.errors.length > 0 && (
-                <ul>
-                    {state.errors.map((error) => (
-                        <li key={error}>{errorMessage(error)}</li>
-                    ))}
-                </ul>
-            )}
-            <input
-                placeholder="Date"
-                value={state.draft.date}
-                onChange={(e) =>
-                    dispatch({
-                        type: "DraftDateChanged",
-                        value: e.target.value,
-                    })
-                }
-            />
-            <input
-                placeholder="Description"
-                value={state.draft.description}
-                onChange={(e) =>
-                    dispatch({
-                        type: "DraftDescriptionChanged",
-                        value: e.target.value,
-                    })
-                }
-            />
+        <div>
+            <h1>簡易家計簿</h1>
+            <section>
+                <h2>入力</h2>
 
-            <input
-                placeholder="Amount"
-                value={state.draft.amount}
-                onChange={(e) =>
-                    dispatch({
-                        type: "DraftAmountChanged",
-                        value: e.target.value,
-                    })
-                }
-            />
-            <button
-                onClick={() =>
-                    dispatch({ type: "EntrySubmitted", id: "temp-id-1" })
-                }
-            >
-                支出を追加
-            </button>
+                <input
+                    type="date"
+                    value={state.draft.date}
+                    onChange={(e) =>
+                        dispatch({
+                            type: "DraftDateChanged",
+                            value: e.target.value,
+                        })
+                    }
+                />
+                <select
+                    value={state.draft.tag}
+                    onChange={(e) =>
+                        dispatch({
+                            type: "DraftTagChanged",
+                            value: e.target.value as Tag,
+                        })
+                    }
+                >
+                    <option value="FoodExpense">食費</option>
+                    <option value="Hobby">趣味</option>
+                    <option value="UtilityBills">公共料金</option>
+                    <option value="Loan">返済</option>
+                </select>
+                <input
+                    type="text"
+                    placeholder="内容"
+                    value={state.draft.description}
+                    onChange={(e) =>
+                        dispatch({
+                            type: "DraftDescriptionChanged",
+                            value: e.target.value,
+                        })
+                    }
+                />
 
-            <div>全体合計: {filteredTotalAmount}</div>
-        </>
+                <input
+                    type="text"
+                    placeholder="金額"
+                    value={state.draft.amount}
+                    onChange={(e) =>
+                        dispatch({
+                            type: "DraftAmountChanged",
+                            value: e.target.value,
+                        })
+                    }
+                />
+                <input
+                    type="text"
+                    placeholder="備考"
+                    value={state.draft.note}
+                    onChange={(e) => {
+                        dispatch({
+                            type: "DraftNoteChanged",
+                            value: e.target.value,
+                        });
+                    }}
+                />
+                <button
+                    onClick={() =>
+                        dispatch({
+                            type: "EntrySubmitted",
+                            id: crypto.randomUUID(),
+                        })
+                    }
+                >
+                    支出を追加
+                </button>
+
+                {state.submitAttemoted && state.errors.length > 0 && (
+                    <ul>
+                        {state.errors.map((error) => (
+                            <li key={error}>{errorMessage(error)}</li>
+                        ))}
+                    </ul>
+                )}
+            </section>
+
+            <section>
+                <h2>絞り込み</h2>
+
+                <select
+                    value={state.selectedTag}
+                    onChange={(e) =>
+                        dispatch({
+                            type: "SelectedTagChanged",
+                            value: e.target.value as SelectedTag,
+                        })
+                    }
+                >
+                    <option value="All">すべて</option>
+                    <option value="FoodExpecse">食費</option>
+                    <option value="Hobby">趣味</option>
+                    <option value="UtilityBills">公共料金</option>
+                    <option value="Loan">返済</option>
+                </select>
+            </section>
+
+            <section>
+                <h2>集計</h2>
+                <p>全体合計: {totalAmount.toLocaleString("ja-JP")}円</p>
+                <p>
+                    表示中合計: {filteredTotalAmount.toLocaleString("ja-JP")}円
+                </p>
+                <p>件数: {visibleEntries.length}件</p>
+            </section>
+            <section>
+                <h2>一覧</h2>
+
+                {visibleEntries.length === 0 ? (
+                    <p>まだデータがないよ</p>
+                ) : (
+                    <ul>
+                        {visibleEntries.map((entry) => (
+                            <li key={entry.id}>
+                                {entry.date} / {tagLabelMap[entry.tag]} /{" "}
+                                {entry.description} /{" "}
+                                {entry.amount.toLocaleString("ja-JP")}円
+                                {entry.note ? ` / ${entry.note}` : ""}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </section>
+
+            <details>
+                <summary>state確認</summary>
+                <pre>{JSON.stringify(state, null, 2)}</pre>
+            </details>
+        </div>
     );
 }
 

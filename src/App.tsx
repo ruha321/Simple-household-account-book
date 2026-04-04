@@ -7,7 +7,14 @@ import {
     sumAmount,
 } from "./derived-data/derivedData";
 import { errorMessage } from "./reducer/validation";
-import { SELECTED_TAGS, TAGS, type SelectedTag, type Tag } from "./types/types";
+import {
+    isSelectedTag,
+    isTag,
+    SELECTED_TAGS,
+    TAGS,
+    type SelectedTag,
+    type Tag,
+} from "./types/types";
 
 const tagLabelMap = Object.freeze({
     FoodExpense: "食費",
@@ -46,12 +53,14 @@ function App() {
                 />
                 <select
                     value={state.draft.tag}
-                    onChange={(e) =>
-                        dispatch({
-                            type: "DraftTagChanged",
-                            value: e.target.value as Tag,
-                        })
-                    }
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (isTag(value))
+                            dispatch({
+                                type: "DraftTagChanged",
+                                value,
+                            });
+                    }}
                 >
                     {TAGS.map((tag) => (
                         <option key={tag} value={tag}>
@@ -118,12 +127,14 @@ function App() {
 
                 <select
                     value={state.selectedTag}
-                    onChange={(e) =>
-                        dispatch({
-                            type: "SelectedTagChanged",
-                            value: e.target.value as SelectedTag,
-                        })
-                    }
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        if (isSelectedTag(value))
+                            dispatch({
+                                type: "SelectedTagChanged",
+                                value,
+                            });
+                    }}
                 >
                     {SELECTED_TAGS.map((selected_tag) => (
                         <option key={selected_tag} value={selected_tag}>

@@ -27,11 +27,6 @@ type ValidationError =
     | "AmountRequired"
     | "AmountInvalid";
 
-type ValidationResult = Readonly<{
-    ok: boolean;
-    errors: readonly ValidationError[];
-}>;
-
 type AppState = Readonly<{
     entries: readonly ExpenseEntry[];
     draft: DraftEntry;
@@ -57,14 +52,4 @@ export type {
     AppState,
     Action,
     ValidationError,
-    ValidationResult,
 };
-
-export { isTag, isSelectedTag };
-function isTag(value: string): value is Tag {
-    return TAGS.includes(value as Tag);
-}
-
-function isSelectedTag(value: string): value is SelectedTag {
-    return SELECTED_TAGS.includes(value as SelectedTag);
-}

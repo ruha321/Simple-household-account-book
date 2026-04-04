@@ -1,24 +1,24 @@
 import { useEffect, useReducer } from "react";
 import "./App.css";
-import { createInitialState } from "./features/household-account/model/persistence";
+import {
+    createInitialState,
+    savePersistedState,
+} from "./features/household-account/model/persistence";
 import { reducer } from "./features/household-account/model/reducer";
 import {
     selectFilteredTotalAmount,
     selectVisibleEntries,
     sumAmount,
 } from "./features/household-account/model/selectors";
-import type { PersistedState } from "./features/household-account/model/persistence";
-import {
-    errorMessage,
-    selectedTagLabelMap,
-    tagLabelMap,
-} from "./features/household-account/ui/labels";
-import { isSelectedTag, isTag } from "./features/household-account/model/types";
-import { STORAGE_KEY } from "./features/household-account/model/persistence";
-import {
-    TAGS,
-    SELECTED_TAGS,
-} from "./features/household-account/model/constants";
+import EntryForm from "./features/household-account/ui/EntryForm";
+import type {
+    SelectedTag,
+    Tag,
+} from "./features/household-account/model/types";
+import TagFilter from "./features/household-account/ui/TagFilter";
+import SummaryPanel from "./features/household-account/ui/SummaryPanel";
+import EntryList from "./features/household-account/ui/EntryList";
+import DebugState from "./features/household-account/ui/DebugState";
 
 function App() {
     const [state, dispatch] = useReducer(reducer, createInitialState());
@@ -29,153 +29,77 @@ function App() {
 
     const { entries, selectedTag } = state;
     useEffect(() => {
-        const persisted: PersistedState = {
+        savePersistedState({
             entries,
             selectedTag,
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+        });
     }, [entries, selectedTag]);
 
     return (
         <div>
             <h1>簡易家計簿</h1>
-            <section>
-                <h2>入力</h2>
 
-                <input
-                    type="date"
-                    value={state.draft.date}
-                    onChange={(e) =>
-                        dispatch({
-                            type: "DraftDateChanged",
-                            value: e.target.value,
-                        })
-                    }
-                />
-                <select
-                    value={state.draft.tag}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        if (isTag(value))
-                            dispatch({
-                                type: "DraftTagChanged",
-                                value,
-                            });
-                    }}
-                >
-                    {TAGS.map((tag) => (
-                        <option key={tag} value={tag}>
-                            {tagLabelMap[tag]}
-                        </option>
-                    ))}
-                </select>
-                <input
-                    type="text"
-                    placeholder="内容"
-                    value={state.draft.description}
-                    onChange={(e) =>
-                        dispatch({
-                            type: "DraftDescriptionChanged",
-                            value: e.target.value,
-                        })
-                    }
-                />
+            <EntryForm
+                draft={state.draft}
+                errors={state.errors}
+                submitAttempted={false}
+                onDateChange={(value: string) =>
+                    dispatch({
+                        type: "DraftDateChanged",
+                        value,
+                    })
+                }
+                onTagChange={(value: Tag) =>
+                    dispatch({
+                        type: "DraftTagChanged",
+                        value,
+                    })
+                }
+                onDescriptionChange={(value: string) =>
+                    dispatch({
+                        type: "DraftDescriptionChanged",
+                        value,
+                    })
+                }
+                onAmountChange={(value: string) =>
+                    dispatch({
+                        type: "DraftAmountChanged",
+                        value,
+                    })
+                }
+                onNoteChange={(value: string) =>
+                    dispatch({
+                        type: "DraftNoteChanged",
+                        value,
+                    })
+                }
+                onSubmit={() => {
+                    dispatch({
+                        type: "EntrySubmitted",
+                        id: crypto.randomUUID(),
+                    });
+                }}
+            />
 
-                <input
-                    type="text"
-                    placeholder="金額"
-                    value={state.draft.amount}
-                    onChange={(e) =>
-                        dispatch({
-                            type: "DraftAmountChanged",
-                            value: e.target.value,
-                        })
-                    }
-                />
-                <input
-                    type="text"
-                    placeholder="備考"
-                    value={state.draft.note}
-                    onChange={(e) => {
-                        dispatch({
-                            type: "DraftNoteChanged",
-                            value: e.target.value,
-                        });
-                    }}
-                />
-                <button
-                    onClick={() =>
-                        dispatch({
-                            type: "EntrySubmitted",
-                            id: crypto.randomUUID(),
-                        })
-                    }
-                >
-                    支出を追加
-                </button>
+            <TagFilter
+                selectedTag={state.selectedTag}
+                onSelectedTagChange={(value: SelectedTag) => {
+                    dispatch({
+                        type: "SelectedTagChanged",
+                        value,
+                    });
+                }}
+            />
 
-                {state.submitAttempted && state.errors.length > 0 && (
-                    <ul>
-                        {state.errors.map((error) => (
-                            <li key={error}>{errorMessage(error)}</li>
-                        ))}
-                    </ul>
-                )}
-            </section>
+            <SummaryPanel
+                totalAmount={totalAmount}
+                filteredTotalAmount={filteredTotalAmount}
+                visibleCount={visibleEntries.length}
+            />
 
-            <section>
-                <h2>絞り込み</h2>
+            <EntryList entries={visibleEntries} />
 
-                <select
-                    value={state.selectedTag}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        if (isSelectedTag(value))
-                            dispatch({
-                                type: "SelectedTagChanged",
-                                value,
-                            });
-                    }}
-                >
-                    {SELECTED_TAGS.map((selected_tag) => (
-                        <option key={selected_tag} value={selected_tag}>
-                            {selectedTagLabelMap[selected_tag]}
-                        </option>
-                    ))}
-                </select>
-            </section>
-
-            <section>
-                <h2>集計</h2>
-                <p>全体合計: {totalAmount.toLocaleString("ja-JP")}円</p>
-                <p>
-                    表示中合計: {filteredTotalAmount.toLocaleString("ja-JP")}円
-                </p>
-                <p>件数: {visibleEntries.length}件</p>
-            </section>
-            <section>
-                <h2>一覧</h2>
-
-                {visibleEntries.length === 0 ? (
-                    <p>まだデータがないよ</p>
-                ) : (
-                    <ul>
-                        {visibleEntries.map((entry) => (
-                            <li key={entry.id}>
-                                {entry.date} / {tagLabelMap[entry.tag]} /{" "}
-                                {entry.description} /{" "}
-                                {entry.amount.toLocaleString("ja-JP")}円
-                                {entry.note ? ` / ${entry.note}` : ""}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </section>
-
-            <details>
-                <summary>state確認</summary>
-                <pre>{JSON.stringify(state, null, 2)}</pre>
-            </details>
+            <DebugState state={state} />
         </div>
     );
 }

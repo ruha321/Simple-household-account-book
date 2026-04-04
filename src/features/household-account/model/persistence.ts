@@ -33,5 +33,14 @@ function createInitialState(): AppState {
     };
 }
 
+function savePersistedState(persisted: PersistedState): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+}
+
 export type { PersistedState };
-export { STORAGE_KEY, loadPersistedState, createInitialState };
+export {
+    STORAGE_KEY,
+    loadPersistedState,
+    createInitialState,
+    savePersistedState,
+};

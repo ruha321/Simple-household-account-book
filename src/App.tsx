@@ -1,6 +1,6 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import "./App.css";
-import { initialState, reducer } from "./reducer/reducer";
+import { createInitialState, reducer } from "./reducer/reducer";
 import {
     selectFilteredTotalAmount,
     selectVisibleEntries,
@@ -12,9 +12,11 @@ import {
     isTag,
     SELECTED_TAGS,
     TAGS,
+    type PersistedState,
     type SelectedTag,
     type Tag,
 } from "./types/types";
+import { STORAGE_KEY } from "./effect";
 
 const tagLabelMap = Object.freeze({
     FoodExpense: "食費",
@@ -29,11 +31,20 @@ const selectedTagLabelMap = Object.freeze({
 } satisfies Record<SelectedTag, string>);
 
 function App() {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, createInitialState());
 
     const visibleEntries = selectVisibleEntries(state);
     const totalAmount = sumAmount(state.entries);
     const filteredTotalAmount = selectFilteredTotalAmount(state);
+
+    const {entries,selectedTag} = state;
+    useEffect(() => {
+        const persisted: PersistedState = {
+            entries,
+            selectedTag
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+    }, [entries, selectedTag]);
 
     return (
         <div>

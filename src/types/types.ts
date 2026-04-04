@@ -29,6 +29,11 @@ type ExpenseEntry = Readonly<{
     note: string;
 }>;
 
+type PersistedState = Readonly<{
+    entries: readonly ExpenseEntry[];
+    selectedTag: SelectedTag;
+}>;
+
 type ValidationError =
     | "DateRequired"
     | "DescriptionRequired"
@@ -62,6 +67,7 @@ export type {
     SelectedTag,
     DraftEntry,
     ExpenseEntry,
+    PersistedState,
     AppState,
     Action,
     ValidationError,

@@ -42,7 +42,7 @@ function App() {
             <EntryForm
                 draft={state.draft}
                 errors={state.errors}
-                submitAttempted={false}
+                submitAttempted={state.submitAttempted}
                 onDateChange={(value: string) =>
                     dispatch({
                         type: "DraftDateChanged",

@@ -1,7 +1,7 @@
 import type { AppState } from "../model/types";
 
 type DebugStateProps = {
-    state: Readonly<AppState>;
+    state: AppState;
 };
 
 const DebugState = (props: DebugStateProps) => {

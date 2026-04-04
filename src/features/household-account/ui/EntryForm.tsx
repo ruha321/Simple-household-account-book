@@ -34,7 +34,6 @@ const EntryForm = (props: EntryFormProps) => {
             <input
                 type="date"
                 value={draft.date}
-                // TODO:修正
                 onChange={(e) => onDateChange(e.target.value)}
             />
             <select
@@ -73,7 +72,7 @@ const EntryForm = (props: EntryFormProps) => {
                     onNoteChange(e.target.value);
                 }}
             />
-            <button onClick={() => onSubmit()}>支出を追加</button>
+            <button onClick={onSubmit}>支出を追加</button>
 
             {submitAttempted && errors.length > 0 && (
                 <ul>

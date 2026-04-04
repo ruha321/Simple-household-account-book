@@ -1,9 +1,13 @@
 import { useReducer } from "react";
 import "./App.css";
 import { initialState, reducer } from "./reducer/reducer";
-import { selectVisibleEntries, sumAmount } from "./derived-data/derivedData";
+import {
+    selectFilteredTotalAmount,
+    selectVisibleEntries,
+    sumAmount,
+} from "./derived-data/derivedData";
 import { errorMessage } from "./reducer/validation";
-import type { SelectedTag, Tag } from "./types/Date-types";
+import { SELECTED_TAGS, TAGS, type SelectedTag, type Tag } from "./types/types";
 
 const tagLabelMap = Object.freeze({
     FoodExpense: "食費",
@@ -12,12 +16,17 @@ const tagLabelMap = Object.freeze({
     Loan: "返済",
 } satisfies Record<Tag, string>);
 
+const selectedTagLabelMap = Object.freeze({
+    All: "すべて",
+    ...tagLabelMap,
+} satisfies Record<SelectedTag, string>);
+
 function App() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const visibleEntries = selectVisibleEntries(state);
     const totalAmount = sumAmount(state.entries);
-    const filteredTotalAmount = sumAmount(visibleEntries);
+    const filteredTotalAmount = selectFilteredTotalAmount(state);
 
     return (
         <div>
@@ -44,10 +53,11 @@ function App() {
                         })
                     }
                 >
-                    <option value="FoodExpense">食費</option>
-                    <option value="Hobby">趣味</option>
-                    <option value="UtilityBills">公共料金</option>
-                    <option value="Loan">返済</option>
+                    {TAGS.map((tag) => (
+                        <option key={tag} value={tag}>
+                            {tagLabelMap[tag]}
+                        </option>
+                    ))}
                 </select>
                 <input
                     type="text"
@@ -94,7 +104,7 @@ function App() {
                     支出を追加
                 </button>
 
-                {state.submitAttemoted && state.errors.length > 0 && (
+                {state.submitAttempted && state.errors.length > 0 && (
                     <ul>
                         {state.errors.map((error) => (
                             <li key={error}>{errorMessage(error)}</li>
@@ -115,11 +125,11 @@ function App() {
                         })
                     }
                 >
-                    <option value="All">すべて</option>
-                    <option value="FoodExpecse">食費</option>
-                    <option value="Hobby">趣味</option>
-                    <option value="UtilityBills">公共料金</option>
-                    <option value="Loan">返済</option>
+                    {SELECTED_TAGS.map((selected_tag) => (
+                        <option key={selected_tag} value={selected_tag}>
+                            {selectedTagLabelMap[selected_tag]}
+                        </option>
+                    ))}
                 </select>
             </section>
 

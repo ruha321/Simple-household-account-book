@@ -1,8 +1,4 @@
-import type {
-    DraftEntry,
-    ExpenseEntry,
-    ValidationError,
-} from "../types/Date-types";
+import type { DraftEntry, ExpenseEntry, ValidationError } from "../types/types";
 import { parseAmount, validateDraft } from "./validation";
 
 function createEntry(
@@ -24,7 +20,7 @@ type SubmitDraftResult =
     | Readonly<{ ok: false; errors: readonly ValidationError[] }>
     | Readonly<{ ok: true; entry: ExpenseEntry }>;
 
-function submtDraft(id: string, draft: DraftEntry): SubmitDraftResult {
+function submitDraft(id: string, draft: DraftEntry): SubmitDraftResult {
     const errors = validateDraft(draft);
 
     if (errors.length > 0) {
@@ -43,4 +39,4 @@ function submtDraft(id: string, draft: DraftEntry): SubmitDraftResult {
     };
 }
 
-export default submtDraft;
+export default submitDraft;

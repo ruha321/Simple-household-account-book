@@ -1,8 +1,4 @@
-import type {
-    Action,
-    AppState,
-    DraftEntry,
-} from "../types/Date-types";
+import type { Action, AppState, DraftEntry } from "../types/types";
 import submitDraft from "./submitDraft";
 import { validateDraft } from "./validation";
 
@@ -19,14 +15,14 @@ const initialState: AppState = {
     draft: emptyDraft,
     selectedTag: "All",
     errors: [],
-    submitAttemoted: false,
+    submitAttempted: false,
 };
 
 function updateDraft(state: AppState, nextDraft: DraftEntry): AppState {
     return {
         ...state,
         draft: nextDraft,
-        errors: state.submitAttemoted ? validateDraft(nextDraft) : state.errors,
+        errors: state.submitAttempted ? validateDraft(nextDraft) : state.errors,
     };
 }
 
@@ -63,12 +59,12 @@ function reducer(state: AppState, action: Action): AppState {
                 selectedTag: action.value,
             };
         case "EntrySubmitted": {
-            const result = submitDraft(action.id, state.draft)
+            const result = submitDraft(action.id, state.draft);
 
             if (!result.ok) {
                 return {
                     ...state,
-                    submitAttemoted: true,
+                    submitAttempted: true,
                     errors: result.errors,
                 };
             }
@@ -78,7 +74,7 @@ function reducer(state: AppState, action: Action): AppState {
                 entries: [...state.entries, result.entry],
                 draft: emptyDraft,
                 errors: [],
-                submitAttemoted: false,
+                submitAttempted: false,
             };
         }
     }

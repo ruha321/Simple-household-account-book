@@ -1,6 +1,16 @@
-type Tag = "FoodExpense" | "Hobby" | "UtilityBills" | "Loan";
+const TAGS = ["FoodExpense", "Hobby", "UtilityBills", "Loan"] as const;
+type Tag = (typeof TAGS)[number];
 
-type SelectedTag = "All" | Tag;
+const SELECTED_TAGS = ["All", ...TAGS] as const;
+type SelectedTag = (typeof SELECTED_TAGS)[number];
+
+function isTag(value: string): value is Tag {
+    return TAGS.includes(value as Tag);
+}
+
+function isSelectedTag(value: string): value is SelectedTag {
+    return SELECTED_TAGS.includes(value as SelectedTag);
+}
 
 type DraftEntry = Readonly<{
     date: string;
@@ -35,7 +45,7 @@ type AppState = Readonly<{
     draft: DraftEntry;
     selectedTag: SelectedTag;
     errors: readonly ValidationError[];
-    submitAttemoted: boolean;
+    submitAttempted: boolean;
 }>;
 
 type Action =
@@ -47,4 +57,15 @@ type Action =
     | Readonly<{ type: "EntrySubmitted"; id: string }>
     | Readonly<{ type: "SelectedTagChanged"; value: SelectedTag }>;
 
-export type { Tag, SelectedTag, DraftEntry, ExpenseEntry, AppState, Action, ValidationError, ValidationResult };
+export type {
+    Tag,
+    SelectedTag,
+    DraftEntry,
+    ExpenseEntry,
+    AppState,
+    Action,
+    ValidationError,
+    ValidationResult,
+};
+
+export { TAGS, SELECTED_TAGS, isTag, isSelectedTag };

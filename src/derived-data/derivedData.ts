@@ -1,4 +1,4 @@
-import type { AppState, ExpenseEntry } from "../types/Date-types";
+import type { AppState, ExpenseEntry } from "../types/types";
 
 function selectVisibleEntries(state: AppState): readonly ExpenseEntry[] {
     if (state.selectedTag === "All") {

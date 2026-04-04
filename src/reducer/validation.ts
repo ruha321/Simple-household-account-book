@@ -1,4 +1,4 @@
-import type { DraftEntry, ValidationError } from "../types/Date-types";
+import type { DraftEntry, ValidationError } from "../types/types";
 
 function validateDraft(draft: DraftEntry): readonly ValidationError[] {
     const errors: ValidationError[] = [];

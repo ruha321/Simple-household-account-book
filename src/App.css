@@ -1,0 +1,72 @@
+:root {
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --danger: #b91c1c;
+
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+
+    --space-1: 8px;
+    --space-2: 12px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+
+    --content-width: 960px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+.app {
+    width: min(var(--content-width), calc(100% - 32px));
+    margin-inline: auto;
+    padding-block: var(--space-5);
+}
+
+.app > h1 {
+    margin: 0 0 var(--space-4);
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+.app section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--space-4);
+}
+
+.app section + section,
+.app deteils {
+    margin-top: var(--space-4);
+}

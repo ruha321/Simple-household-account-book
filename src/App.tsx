@@ -36,7 +36,7 @@ function App() {
     }, [entries, selectedTag]);
 
     return (
-        <div>
+        <div className="app">
             <h1>簡易家計簿</h1>
 
             <EntryForm
